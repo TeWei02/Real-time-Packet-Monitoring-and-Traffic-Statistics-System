@@ -2,7 +2,7 @@
 
 > **Real-time Packet Monitoring and Traffic Statistics System – Analysis Report**
 >
-> Generated: 2026-04-04 18:28:59
+> Generated: 2026-04-04 18:30:45
 
 ---
 
@@ -31,10 +31,7 @@
 
 | Protocol | Packets | Share |
 |--- | --- | ---|
-| TCP | 81 | 40.5% |
-| UDP | 56 | 28.0% |
-| DNS | 41 | 20.5% |
-| ICMP | 22 | 11.0% |
+| OTHER | 200 | 100.0% |
 
 > 詳細圓餅圖請參閱：`output/protocol_distribution.png`
 
@@ -42,62 +39,31 @@
 
 ## 4. Top Source IPs
 
-| Source IP | Packets |
-|--- | ---|
-| 10.0.0.5 | 80 |
-| 192.168.1.10 | 72 |
-| 192.168.1.20 | 48 |
+_No data_
 
 ---
 
 ## 5. Top Destination IPs
 
-| Destination IP | Packets |
-|--- | ---|
-| 8.8.8.8 | 101 |
-| 1.1.1.1 | 38 |
-| 172.217.0.1 | 32 |
-| 192.168.1.20 | 29 |
+_No data_
 
 ---
 
 ## 6. Top Source Ports
 
-| Port | Service | Packets |
-|--- | --- | ---|
-| 7325 | 7325 | 1 |
-| 41862 | 41862 | 1 |
-| 24589 | 24589 | 1 |
-| 25418 | 25418 | 1 |
-| 40751 | 40751 | 1 |
-| 31331 | 31331 | 1 |
-| 21765 | 21765 | 1 |
-| 46311 | 46311 | 1 |
+_No data_
 
 ---
 
 ## 7. Top Destination Ports
 
-| Port | Service | Packets |
-|--- | --- | ---|
-| 53 | DNS | 61 |
-| 80 | HTTP | 24 |
-| 8080 | HTTP-alt | 21 |
-| 443 | HTTPS | 19 |
-| 5353 | 5353 | 19 |
-| 22 | SSH | 17 |
-| 123 | 123 | 17 |
+_No data_
 
 ---
 
 ## 8. DNS 查詢 (DNS Queries)
 
-| Query | Count |
-|--- | ---|
-| openai.com | 18 |
-| google.com | 10 |
-| example.com | 7 |
-| github.com | 6 |
+_No DNS queries detected._
 
 ---
 

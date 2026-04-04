@@ -221,8 +221,8 @@ def _md_table(headers: list[str], rows: list[list[str]]) -> str:
     """Build a Markdown table string."""
     sep = " | ".join(["---"] * len(headers))
     header_row = " | ".join(headers)
-    body = "\n".join(" | ".join(row) for row in rows)
-    return f"| {header_row} |\n|{sep}|\n" + "\n".join(f"| {' | '.join(r)} |" for r in rows)
+    body = "\n".join(f"| {' | '.join(r)} |" for r in rows)
+    return f"| {header_row} |\n|{sep}|\n{body}"
 
 
 def export_markdown(stats: dict[str, Any], output_dir: Path | None = None) -> Path:
