@@ -1,14 +1,49 @@
-# 即時封包監測與流量統計系統
+# Real-time Packet Monitoring and Traffic Statistics System
 
-**Real-time Packet Monitoring and Traffic Statistics System**
+**即時封包監測與流量統計系統**
+
+---
+
+## 🚀 Quick Start for Admissions Reviewers
+
+> **No root access or special hardware required.**  A single command generates synthetic traffic, runs the full analysis pipeline, and exports all results to `./output/`.
+
+**Linux / macOS**
+```bash
+git clone https://github.com/TeWei02/Real-time-Packet-Monitoring-and-Traffic-Statistics-System.git
+cd Real-time-Packet-Monitoring-and-Traffic-Statistics-System
+bash run_demo.sh
+```
+
+**Windows**
+```
+git clone https://github.com/TeWei02/Real-time-Packet-Monitoring-and-Traffic-Statistics-System.git
+cd Real-time-Packet-Monitoring-and-Traffic-Statistics-System
+run_demo.bat
+```
+
+Or, if you already have Python 3.11+ and the dependencies installed:
+```bash
+python main.py --demo --export
+```
+
+Expected outputs in `./output/`:
+| File | Description |
+|------|-------------|
+| `traffic_summary.csv` | Packet-level dataset (200 rows) |
+| `protocol_distribution.png` | Protocol composition pie chart |
+| `top_endpoints.png` | Top source / destination bar chart |
+| `report.md` | Markdown analysis summary |
 
 ---
 
 ## Project Overview
 
-This project is a student-driven, research-style implementation of a real-time packet monitoring and traffic statistics system, developed as an introductory hands-on exercise in network and communication engineering. The system is written entirely in Python 3 and is designed to be reproducible across platforms, making it suitable both as a course deliverable and as a foundation for more advanced research.
+This is an undergraduate-level technical portfolio project in network and communication engineering, written entirely in Python 3.11+. It demonstrates how raw packet data can be captured, parsed, and translated into structured statistics and visualizations — without relying on any external network monitoring service.
 
-At its core, the project demonstrates competency in four interconnected domains: real-time packet monitoring via live network sniffing, multi-layer protocol dissection (Ethernet → IPv4 → TCP/UDP/ICMP/DNS/HTTP), flow-level traffic profiling using statistical aggregation, and the translation of raw packet data into structured visualizations and reports. The dual-mode architecture — supporting both offline `.pcap` analysis and live interface capture with graceful permission fallback — reflects a deliberate engineering trade-off between portability and depth. This project is intended as a starting point that can naturally evolve into a more formal research initiative, such as anomaly detection over captured flows, ML-based traffic classification, or integration with open-source network observability stacks like Zeek or Elasticsearch.
+The system is organized around a **dual-mode architecture**: an *offline* mode that reads standard `.pcap` files for reproducible analysis, and a *live* mode that sniffs a real network interface (root/Administrator required) with automatic fallback to a synthetic demo dataset when privileges are insufficient. This design keeps the project runnable on any development machine while still supporting real network capture when conditions allow.
+
+Core capabilities include multi-layer **protocol dissection** (Ethernet → IPv4 → TCP/UDP/ICMP/DNS/HTTP), **flow-level traffic statistics** (packets per second, protocol distribution, top-N talker rankings), a **Rich CLI dashboard**, and structured **data export** (CSV, PNG charts, Markdown report). The entire pipeline requires no database or external service — all state is held in memory as a pandas DataFrame.
 
 ---
 

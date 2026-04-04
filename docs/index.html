@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Real-time Packet Monitoring &amp; Traffic Statistics System</title>
+  <style>
+    /* ── Reset / base ──────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #f8f9fa;
+      --surface:   #ffffff;
+      --border:    #dee2e6;
+      --text:      #212529;
+      --muted:     #6c757d;
+      --accent:    #0d6efd;
+      --accent-dk: #0a58ca;
+      --code-bg:   #f3f4f6;
+      --green:     #198754;
+      --radius:    8px;
+      --shadow:    0 1px 4px rgba(0,0,0,.08);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                   "Helvetica Neue", Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { color: var(--accent-dk); text-decoration: underline; }
+
+    /* ── Layout ────────────────────────────────────────────────────────────── */
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 1.25rem;
+    }
+
+    section { padding: 3rem 0; }
+    section + section { border-top: 1px solid var(--border); }
+
+    /* ── Hero / header ────────────────────────────────────────────────────── */
+    header {
+      background: linear-gradient(135deg, #0d2b55 0%, #1a4f8a 100%);
+      color: #fff;
+      padding: 3.5rem 1.25rem 3rem;
+      text-align: center;
+    }
+
+    header .badge {
+      display: inline-block;
+      background: rgba(255,255,255,.18);
+      border: 1px solid rgba(255,255,255,.35);
+      color: #fff;
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      padding: .25rem .75rem;
+      border-radius: 50px;
+      margin-bottom: 1rem;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1.25;
+      margin-bottom: .6rem;
+    }
+
+    header .subtitle {
+      font-size: 1.05rem;
+      color: rgba(255,255,255,.8);
+      max-width: 600px;
+      margin: 0 auto 1.75rem;
+    }
+
+    .btn-row { display: flex; gap: .75rem; justify-content: center; flex-wrap: wrap; }
+
+    .btn {
+      display: inline-block;
+      padding: .55rem 1.35rem;
+      border-radius: var(--radius);
+      font-size: .92rem;
+      font-weight: 600;
+      transition: opacity .15s, transform .1s;
+    }
+    .btn:hover { opacity: .88; transform: translateY(-1px); text-decoration: none; }
+
+    .btn-primary  { background: #fff;          color: #0d2b55; }
+    .btn-outline  { background: transparent;   color: #fff; border: 2px solid rgba(255,255,255,.7); }
+
+    /* ── Section headings ──────────────────────────────────────────────────── */
+    h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #0d2b55;
+    }
+
+    h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin: 1.4rem 0 .4rem;
+      color: var(--text);
+    }
+
+    p { margin-bottom: .85rem; }
+    p:last-child { margin-bottom: 0; }
+
+    /* ── Card grid ─────────────────────────────────────────────────────────── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 1.1rem;
+      margin-top: 1.25rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.2rem 1.4rem;
+      box-shadow: var(--shadow);
+    }
+
+    .card .icon {
+      font-size: 1.6rem;
+      margin-bottom: .5rem;
+      display: block;
+    }
+
+    .card h3 { margin-top: .1rem; font-size: .98rem; }
+
+    .card p  { font-size: .88rem; color: var(--muted); margin-bottom: 0; }
+
+    /* ── Architecture diagram ────────────────────────────────────────────── */
+    .arch-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      margin-top: 1.25rem;
+      overflow-x: auto;
+    }
+
+    .flow {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: .4rem;
+      font-size: .88rem;
+    }
+
+    .flow-step {
+      background: #e9f0fb;
+      border: 1px solid #b6cef5;
+      border-radius: 6px;
+      padding: .3rem .7rem;
+      white-space: nowrap;
+    }
+
+    .flow-arrow { color: var(--muted); font-weight: 700; }
+
+    .flow-branch {
+      display: flex;
+      flex-direction: column;
+      gap: .3rem;
+    }
+
+    /* ── Code block ────────────────────────────────────────────────────────── */
+    .code-block {
+      background: #1e2a3a;
+      color: #d1e8ff;
+      border-radius: var(--radius);
+      padding: 1.1rem 1.4rem;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: .87rem;
+      line-height: 1.6;
+      overflow-x: auto;
+      margin-top: 1rem;
+    }
+
+    .code-block .comment { color: #7aa2d4; }
+    .code-block .cmd     { color: #9de0ff; }
+
+    /* ── Output table ──────────────────────────────────────────────────────── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      font-size: .9rem;
+    }
+    th, td { padding: .6rem .9rem; border: 1px solid var(--border); text-align: left; }
+    th { background: #f1f3f5; font-weight: 600; }
+    tr:nth-child(even) td { background: #fafbfc; }
+
+    /* ── Learning outcomes list ────────────────────────────────────────────── */
+    ul.outcomes {
+      list-style: none;
+      margin-top: .75rem;
+      padding: 0;
+    }
+    ul.outcomes li {
+      padding: .35rem 0 .35rem 1.6rem;
+      position: relative;
+      font-size: .95rem;
+    }
+    ul.outcomes li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    /* ── Reproducibility highlight box ────────────────────────────────────── */
+    .highlight-box {
+      background: #eaf4ee;
+      border-left: 4px solid var(--green);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 1rem 1.25rem;
+      margin-top: 1.25rem;
+      font-size: .94rem;
+    }
+
+    .highlight-box strong { color: var(--green); }
+
+    /* ── Footer ────────────────────────────────────────────────────────────── */
+    footer {
+      text-align: center;
+      padding: 2rem 1.25rem;
+      font-size: .84rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── Responsive ────────────────────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.5rem; }
+      h2 { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Hero ──────────────────────────────────────────────────────────────── -->
+<header>
+  <div class="container">
+    <span class="badge">Undergraduate Portfolio Project · Python 3.11+</span>
+    <h1>Real-time Packet Monitoring<br>&amp; Traffic Statistics System</h1>
+    <p class="subtitle">
+      A CLI-based network analysis tool that captures packets, dissects
+      multi-layer protocol headers, and exports flow-level statistics —
+      fully reproducible with one command, no root access required.
+    </p>
+    <div class="btn-row">
+      <a class="btn btn-primary"
+         href="https://github.com/TeWei02/Real-time-Packet-Monitoring-and-Traffic-Statistics-System"
+         target="_blank" rel="noopener">
+        View on GitHub
+      </a>
+      <a class="btn btn-outline"
+         href="https://github.com/TeWei02/Real-time-Packet-Monitoring-and-Traffic-Statistics-System/blob/main/README.md"
+         target="_blank" rel="noopener">
+        Read README
+      </a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- ── Motivation ─────────────────────────────────────────────────────────── -->
+<section id="motivation">
+  <div class="container">
+    <h2>Motivation</h2>
+    <p>
+      During my undergraduate network engineering coursework, I understood TCP/IP
+      theoretically but had never written code that actually <em>opened</em> a
+      packet. This project was built to close that gap: parse every byte of a
+      live or recorded network stream, reconstruct the protocol stack layer by
+      layer, and surface the results as human-readable statistics.
+    </p>
+    <p>
+      The secondary goal was engineering discipline — making something that runs
+      correctly on any machine, degrades gracefully when privileges are missing,
+      and can be reproduced from scratch in a few minutes by someone who has never
+      seen the code before.
+    </p>
+  </div>
+</section>
+
+<!-- ── Architecture ───────────────────────────────────────────────────────── -->
+<section id="architecture">
+  <div class="container">
+    <h2>System Architecture</h2>
+    <p>
+      The codebase is split into six single-responsibility modules under
+      <code>src/</code>, coordinated by a thin <code>main.py</code> CLI layer.
+    </p>
+
+    <div class="arch-box">
+      <div class="flow">
+        <div class="flow-step">CLI (main.py)<br><small>argparse</small></div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-branch">
+          <div class="flow-step">capture.py · offline<br><small>rdpcap / demo.pcap</small></div>
+          <div class="flow-step">capture.py · live<br><small>scapy sniff → fallback</small></div>
+        </div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step">parser.py<br><small>Protocol dissection</small></div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-step">analyzer.py<br><small>pandas DataFrame + stats</small></div>
+        <span class="flow-arrow">→</span>
+        <div class="flow-branch">
+          <div class="flow-step">dashboard.py<br><small>Rich terminal UI</small></div>
+          <div class="flow-step">report.py<br><small>CSV / PNG / Markdown</small></div>
+        </div>
+      </div>
+
+      <div style="margin-top:1.25rem; font-size:.85rem; color:var(--muted);">
+        <strong>Module responsibilities</strong>
+        <table style="margin-top:.5rem; font-size:.83rem;">
+          <thead><tr><th>Module</th><th>Responsibility</th></tr></thead>
+          <tbody>
+            <tr><td><code>capture.py</code></td><td>Unified packet source — offline pcap or live interface, with graceful fallback</td></tr>
+            <tr><td><code>parser.py</code></td><td>Byte-level dissection into a typed <code>ParsedPacket</code> dataclass (Ethernet → IPv4 → TCP/UDP/ICMP/DNS/HTTP)</td></tr>
+            <tr><td><code>analyzer.py</code></td><td>Aggregates parsed packets into a pandas DataFrame; computes PPS, protocol ratios, top-N talkers</td></tr>
+            <tr><td><code>dashboard.py</code></td><td>Renders a colored, multi-panel summary in the terminal using the <code>rich</code> library</td></tr>
+            <tr><td><code>report.py</code></td><td>Exports CSV, two PNG charts (Matplotlib), and a Markdown report on demand</td></tr>
+            <tr><td><code>utils.py</code></td><td>Shared constants, path helpers, and logging wrappers</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Technical highlights ──────────────────────────────────────────────── -->
+<section id="highlights">
+  <div class="container">
+    <h2>Technical Highlights</h2>
+    <div class="card-grid">
+
+      <div class="card">
+        <span class="icon">🔬</span>
+        <h3>Multi-layer Protocol Dissection</h3>
+        <p>Parses raw bytes from Ethernet frame through IPv4 header down to
+           TCP/UDP/ICMP payload; detects DNS query names and HTTP method verbs.</p>
+      </div>
+
+      <div class="card">
+        <span class="icon">⚖️</span>
+        <h3>Dual-mode Architecture</h3>
+        <p>Offline <code>.pcap</code> analysis and live interface sniffing share
+           a single downstream pipeline; live mode falls back silently to a
+           synthetic demo dataset when privileges are insufficient.</p>
+      </div>
+
+      <div class="card">
+        <span class="icon">📊</span>
+        <h3>Flow-level Statistics</h3>
+        <p>Aggregates per-packet data into time-series metrics: packets per
+           second, peak traffic timestamp, protocol distribution ratios, and
+           top-N source/destination rankings.</p>
+      </div>
+
+      <div class="card">
+        <span class="icon">🖥️</span>
+        <h3>Rich CLI Dashboard</h3>
+        <p>Real-time terminal output using <code>rich</code> renders colored
+           tables, summary panels, and multi-column layouts with no GUI
+           dependency.</p>
+      </div>
+
+      <div class="card">
+        <span class="icon">📁</span>
+        <h3>Structured Export</h3>
+        <p>A single <code>--export</code> flag writes a CSV dataset, two PNG
+           charts, and a Markdown summary to <code>./output/</code>.</p>
+      </div>
+
+      <div class="card">
+        <span class="icon">🧪</span>
+        <h3>Typed &amp; Tested</h3>
+        <p>Packets are parsed into a typed dataclass; 18 pytest cases cover
+           normal operation, edge cases, and empty input across the
+           analyzer module.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── Demo / reproducibility ────────────────────────────────────────────── -->
+<section id="demo">
+  <div class="container">
+    <h2>Running the Demo</h2>
+
+    <div class="highlight-box">
+      <strong>Fully reproducible locally — one command, no root access, no external datasets.</strong><br>
+      The system generates its own synthetic <code>demo.pcap</code> (200 packets) at runtime,
+      runs the complete analysis pipeline, and writes all output to <code>./output/</code>.
+    </div>
+
+    <h3>Linux / macOS</h3>
+    <div class="code-block">
+      <span class="comment"># Clone and enter the repository</span><br>
+      <span class="cmd">git clone https://github.com/TeWei02/Real-time-Packet-Monitoring-and-Traffic-Statistics-System.git</span><br>
+      <span class="cmd">cd Real-time-Packet-Monitoring-and-Traffic-Statistics-System</span><br><br>
+      <span class="comment"># One-command demo runner (creates venv, installs deps, runs demo)</span><br>
+      <span class="cmd">bash run_demo.sh</span>
+    </div>
+
+    <h3>Windows</h3>
+    <div class="code-block">
+      <span class="cmd">git clone https://github.com/TeWei02/Real-time-Packet-Monitoring-and-Traffic-Statistics-System.git</span><br>
+      <span class="cmd">cd Real-time-Packet-Monitoring-and-Traffic-Statistics-System</span><br>
+      <span class="cmd">run_demo.bat</span>
+    </div>
+
+    <h3>Manual (Python 3.11+ already installed)</h3>
+    <div class="code-block">
+      <span class="cmd">pip install -r requirements.txt</span><br>
+      <span class="cmd">python main.py --demo --export</span>
+    </div>
+
+    <p style="margin-top:1rem; font-size:.9rem; color:var(--muted);">
+      Both scripts detect the Python interpreter automatically, create an isolated
+      <code>venv</code> if one does not exist, and exit with a clear error message
+      if any step fails.
+    </p>
+  </div>
+</section>
+
+<!-- ── Expected outputs ───────────────────────────────────────────────────── -->
+<section id="outputs">
+  <div class="container">
+    <h2>Expected Outputs</h2>
+    <p>After a successful demo run, the <code>output/</code> directory contains:</p>
+    <table>
+      <thead>
+        <tr><th>File</th><th>Description</th><th>Use</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>traffic_summary.csv</code></td>
+          <td>Packet-level dataset — one row per packet with timestamp, src/dst IP,
+              protocol, size</td>
+          <td>Load in Excel or pandas for further analysis</td>
+        </tr>
+        <tr>
+          <td><code>protocol_distribution.png</code></td>
+          <td>Pie chart of TCP / UDP / ICMP / DNS share across the captured window</td>
+          <td>Quick visual of traffic composition</td>
+        </tr>
+        <tr>
+          <td><code>top_endpoints.png</code></td>
+          <td>Horizontal bar charts for the top source and destination IP addresses</td>
+          <td>Identify dominant talkers / servers</td>
+        </tr>
+        <tr>
+          <td><code>report.md</code></td>
+          <td>Markdown summary with total packets, byte count, PPS, peak
+              timestamp, and protocol breakdown table</td>
+          <td>Human-readable report suitable for course portfolios</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ── Learning outcomes ──────────────────────────────────────────────────── -->
+<section id="learning">
+  <div class="container">
+    <h2>Learning Outcomes</h2>
+    <p>
+      Building this project required engaging with problems that are not
+      well-covered in introductory coursework. Specifically, it deepened my
+      understanding of:
+    </p>
+    <ul class="outcomes">
+      <li>How the TCP/IP protocol stack maps to actual byte offsets in a captured
+          frame — and how to reconstruct that structure programmatically.</li>
+      <li>The engineering trade-offs in a dual-mode system design: a unified
+          interface requires careful abstraction so that downstream modules
+          remain mode-agnostic.</li>
+      <li>Graceful degradation as an explicit design goal: a system that falls
+          back cleanly when live capture fails is more useful in practice than
+          one that aborts.</li>
+      <li>Translating raw numerical data into meaningful aggregate statistics
+          using pandas — aggregation, groupby, and time-series resampling.</li>
+      <li>The value of zero-dependency reproducibility: shipping a synthetic
+          dataset generator inside the project means any reviewer can verify
+          the output in under five minutes.</li>
+      <li>Writing typed, testable Python: using dataclasses to represent parsed
+          packets makes the analyzer module straightforward to unit-test in
+          isolation.</li>
+    </ul>
+  </div>
+</section>
+
+</main>
+
+<!-- ── Footer ─────────────────────────────────────────────────────────────── -->
+<footer>
+  <div class="container">
+    <p>
+      Undergraduate technical portfolio project &mdash; network and communication engineering.<br>
+      <a href="https://github.com/TeWei02/Real-time-Packet-Monitoring-and-Traffic-Statistics-System"
+         target="_blank" rel="noopener">GitHub Repository</a>
+      &nbsp;&middot;&nbsp;
+      <a href="https://github.com/TeWei02/Real-time-Packet-Monitoring-and-Traffic-Statistics-System/blob/main/README.md"
+         target="_blank" rel="noopener">README</a>
+    </p>
+
+  </div>
+</footer>
+
+</body>
+</html>
