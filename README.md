@@ -4,7 +4,7 @@
 
 ---
 
-## 🚀 Quick Start for Admissions Reviewers
+## 🚀 Quick Start
 
 > **No root access or special hardware required.**  A single command generates synthetic traffic, runs the full analysis pipeline, and exports all results to `./output/`.
 
