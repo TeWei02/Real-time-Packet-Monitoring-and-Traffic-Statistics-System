@@ -7,15 +7,12 @@ of ParsedPacket objects, returning both a pandas DataFrame and a summary dict.
 
 from __future__ import annotations
 
-from collections import Counter
-from datetime import datetime
 from typing import Any
 
 import pandas as pd
 
 from src.parser import ParsedPacket
-from src.utils import proto_name, human_bytes
-
+from src.utils import human_bytes
 
 # ---------------------------------------------------------------------------
 # Core aggregation

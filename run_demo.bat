@@ -9,7 +9,7 @@ REM ── Banner ────────────────────�
 echo.
 echo  +--------------------------------------------------------------+
 echo  ^|   Real-time Packet Monitoring ^& Traffic Statistics System   ^|
-echo  ^|        Admissions / Portfolio Demo Runner  (Windows)        ^|
+echo  ^|           One-command demo runner  (Windows)                ^|
 echo  +--------------------------------------------------------------+
 echo.
 echo   This script will:

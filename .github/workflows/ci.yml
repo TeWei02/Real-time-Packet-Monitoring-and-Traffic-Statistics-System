@@ -9,16 +9,24 @@ on:
 jobs:
   lint-and-test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
-          pip install ruff pytest
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt -r requirements-dev.txt
       - name: Lint with ruff
         run: ruff check .
       - name: Test with pytest
-        run: pytest --tb=short || true
+        run: pytest -q
+      - name: Smoke-test the offline demo pipeline
+        run: python main.py --demo --export
+      - name: Check the static console assets against the pipeline
+        run: python tools/build_web_data.py --check

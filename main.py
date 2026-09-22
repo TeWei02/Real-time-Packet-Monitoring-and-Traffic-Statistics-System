@@ -19,13 +19,12 @@ from pathlib import Path
 # directly as `python main.py` from the project root.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from src.capture import get_packets
-from src.parser import parse_packets
 from src.analyzer import build_dataframe, compute_statistics
+from src.capture import get_packets
 from src.dashboard import render_dashboard
-from src.report import export_csv, export_charts, export_markdown
-from src.utils import info, warn, ensure_output_dir, SAMPLE_DIR
-
+from src.parser import parse_packets
+from src.report import export_charts, export_csv, export_markdown
+from src.utils import SAMPLE_DIR, ensure_output_dir, info, warn
 
 # ---------------------------------------------------------------------------
 # Demo PCAP generation (fallback)
@@ -38,11 +37,10 @@ def _generate_demo_pcap(path: Path) -> bool:
     Returns True on success, False otherwise.
     """
     try:
-        from scapy.all import (
-            Ether, IP, TCP, UDP, ICMP, DNS, DNSQR,
-            wrpcap, RandShort
-        )
-        import random, time
+        import random
+        import time
+
+        from scapy.all import DNS, DNSQR, ICMP, IP, TCP, UDP, Ether, wrpcap
 
         info("Generating synthetic demo.pcap …")
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -86,7 +84,7 @@ def _generate_demo_pcap(path: Path) -> bool:
                     / IP(src=src, dst="8.8.8.8")
                     / UDP(sport=random.randint(1024, 65535), dport=53)
                     / DNS(rd=1, qd=DNSQR(qname=random.choice([
-                        "example.com", "google.com", "github.com", "openai.com"
+                        "example.com", "cloudflare.com", "github.com", "wireshark.org"
                     ])))
                 )
 

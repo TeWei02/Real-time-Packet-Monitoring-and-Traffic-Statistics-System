@@ -9,11 +9,27 @@ Provides two modes:
 
 from __future__ import annotations
 
-import sys
 from pathlib import Path
-from typing import Generator, Iterable
 
-from src.utils import warn, error, info
+from src.utils import error, info, warn
+
+# ---------------------------------------------------------------------------
+# Scapy layer registration
+# ---------------------------------------------------------------------------
+# ``rdpcap`` resolves the link-layer class of a capture file through Scapy's
+# link-type registry (``conf.l2types``).  That registry is only populated once
+# the layer modules have been imported, so importing ``scapy.utils`` alone
+# leaves it empty and every record is silently handed back as a bare ``Raw``
+# object -- the dissection stage then reports a single ``OTHER`` bucket.
+# Importing the layer modules up front keeps the registry complete.
+try:
+    import scapy.layers.dns  # noqa: F401  (DNS)
+    import scapy.layers.inet  # noqa: F401  (IPv4, TCP, UDP, ICMP)
+    import scapy.layers.l2  # noqa: F401  (Ethernet, ARP, …)
+    from scapy.all import Ether, rdpcap
+except ImportError:  # pragma: no cover - reported by the callers below
+    Ether = None  # type: ignore[assignment]
+    rdpcap = None  # type: ignore[assignment]
 
 
 # ---------------------------------------------------------------------------
@@ -40,9 +56,7 @@ def load_pcap(path: str | Path, limit: int | None = None) -> list[RawPacket]:
     -------
     A list of Scapy packet objects.
     """
-    try:
-        from scapy.utils import rdpcap
-    except ImportError:
+    if rdpcap is None:
         error("Scapy is not installed. Run: pip install scapy", exit_code=1)
 
     pcap_path = Path(path)
@@ -54,10 +68,28 @@ def load_pcap(path: str | Path, limit: int | None = None) -> list[RawPacket]:
         packets = rdpcap(str(pcap_path))
         if limit:
             packets = packets[:limit]
+        packets = [_redissect(pkt) for pkt in packets]
         info(f"Loaded {len(packets)} packets.")
-        return list(packets)
+        return packets
     except Exception as exc:
         error(f"Failed to read PCAP file: {exc}", exit_code=1)
+
+
+def _redissect(packet: RawPacket) -> RawPacket:
+    """
+    Re-attach the Ethernet layer to records that Scapy returned undissected.
+
+    Older capture files, or files whose link type is not registered in the
+    running Scapy build, are handed back as ``Raw`` records.  Ethernet is the
+    link layer used by every capture this project produces, so attempting an
+    explicit dissection costs nothing and keeps the downstream parser working.
+    """
+    if Ether is None or packet.__class__.__name__ != "Raw":
+        return packet
+    try:
+        return Ether(bytes(packet))
+    except Exception:
+        return packet
 
 
 # ---------------------------------------------------------------------------

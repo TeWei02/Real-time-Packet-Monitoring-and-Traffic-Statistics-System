@@ -1,0 +1,14 @@
+{
+  "name": "Real-time Packet Monitoring & Traffic Statistics",
+  "short_name": "Packet Monitor",
+  "description": "Capture dissection and traffic statistics in the browser, mirroring the Python command-line pipeline.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b1220",
+  "theme_color": "#0b1220",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

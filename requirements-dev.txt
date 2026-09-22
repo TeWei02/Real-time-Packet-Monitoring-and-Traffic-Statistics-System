@@ -1,0 +1,6 @@
+-r requirements.txt
+
+pytest>=8.0
+ruff>=0.5
+# Development / verification tooling (not needed to run the analyser).
+websocket-client>=1.7

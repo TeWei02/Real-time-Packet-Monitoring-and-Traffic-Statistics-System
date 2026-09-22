@@ -7,10 +7,9 @@ Supports protocol dissection for:
 
 from __future__ import annotations
 
+import warnings
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Optional
-
 
 # ---------------------------------------------------------------------------
 # Parsed packet dataclass
@@ -22,18 +21,18 @@ class ParsedPacket:
 
     timestamp: float          # Unix epoch with sub-second precision
     length: int               # Total packet length in bytes
-    src_ip: Optional[str]     # Source IP address
-    dst_ip: Optional[str]     # Destination IP address
+    src_ip: str | None     # Source IP address
+    dst_ip: str | None     # Destination IP address
     protocol: str             # Top-level protocol label (TCP / UDP / ICMP / …)
-    src_port: Optional[int]   # Source port (TCP/UDP only)
-    dst_port: Optional[int]   # Destination port (TCP/UDP only)
+    src_port: int | None   # Source port (TCP/UDP only)
+    dst_port: int | None   # Destination port (TCP/UDP only)
     info: str                 # Human-readable summary line
-    eth_src: Optional[str] = field(default=None)  # Source MAC address
-    eth_dst: Optional[str] = field(default=None)  # Destination MAC address
-    ttl: Optional[int] = field(default=None)       # IPv4 TTL
-    flags: Optional[str] = field(default=None)     # TCP flags (e.g. 'S', 'SA')
-    dns_query: Optional[str] = field(default=None) # DNS queried name
-    http_method: Optional[str] = field(default=None) # HTTP verb if detected
+    eth_src: str | None = field(default=None)  # Source MAC address
+    eth_dst: str | None = field(default=None)  # Destination MAC address
+    ttl: int | None = field(default=None)       # IPv4 TTL
+    flags: str | None = field(default=None)     # TCP flags (e.g. 'S', 'SA')
+    dns_query: str | None = field(default=None) # DNS queried name
+    http_method: str | None = field(default=None) # HTTP verb if detected
 
     @property
     def datetime(self) -> datetime:
@@ -63,14 +62,18 @@ def _tcp_flags(flags_value) -> str:
         return ""
 
 
-def _detect_http(tcp_layer) -> Optional[str]:
-    """
-    Attempt to detect HTTP method from TCP payload.
+HTTP_METHODS = (b"GET ", b"POST ", b"PUT ", b"DELETE ", b"HEAD ",
+                b"OPTIONS ", b"PATCH ", b"HTTP/")
 
-    Returns the HTTP verb (GET, POST, …) or None.
+
+def _detect_http(tcp_layer) -> str | None:
     """
-    HTTP_METHODS = (b"GET ", b"POST ", b"PUT ", b"DELETE ", b"HEAD ",
-                    b"OPTIONS ", b"PATCH ", b"HTTP/")
+    Return the HTTP request/response line if the TCP payload looks like HTTP.
+
+    Returns
+    -------
+    The first line of the payload (truncated), or None.
+    """
     try:
         payload = bytes(tcp_layer.payload)
         for method in HTTP_METHODS:
@@ -82,21 +85,40 @@ def _detect_http(tcp_layer) -> Optional[str]:
     return None
 
 
-def _dns_query_name(dns_layer) -> Optional[str]:
-    """Extract the first DNS question name from a DNS layer."""
+def _dns_query_name(dns_layer) -> str | None:
+    """
+    Extract the first DNS question name from a DNS layer.
+
+    Scapy ≥ 2.7 exposes the ``qd`` field as a packet list, while earlier
+    releases return the question record directly; both shapes are handled so
+    that the dissection stays correct across supported Scapy versions.  The
+    access itself emits a deprecation warning on newer Scapy builds, which is
+    suppressed here because the list branch below already implements the
+    recommended access pattern.
+    """
     try:
-        if dns_layer.qd:
-            return dns_layer.qd.qname.decode("utf-8", errors="replace").rstrip(".")
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", DeprecationWarning)
+            questions = dns_layer.qd
     except Exception:
-        pass
-    return None
+        return None
+
+    if not questions:
+        return None
+    query = questions[0] if isinstance(questions, list) else questions
+    qname = getattr(query, "qname", None)
+    if qname is None:
+        return None
+    if isinstance(qname, bytes):
+        return qname.decode("utf-8", errors="replace").rstrip(".")
+    return str(qname).rstrip(".")
 
 
 # ---------------------------------------------------------------------------
 # Public parsing function
 # ---------------------------------------------------------------------------
 
-def parse_packet(raw_packet) -> Optional[ParsedPacket]:
+def parse_packet(raw_packet) -> ParsedPacket | None:
     """
     Parse a single Scapy packet into a :class:`ParsedPacket`.
 
@@ -125,11 +147,11 @@ def parse_packet(raw_packet) -> Optional[ParsedPacket]:
         ttl = ip.ttl if ip else None
 
         # Determine top-level protocol & transport fields
-        src_port: Optional[int] = None
-        dst_port: Optional[int] = None
-        flags: Optional[str] = None
-        dns_query: Optional[str] = None
-        http_method: Optional[str] = None
+        src_port: int | None = None
+        dst_port: int | None = None
+        flags: str | None = None
+        dns_query: str | None = None
+        http_method: str | None = None
         protocol = "OTHER"
 
         tcp = _safe_get(raw_packet, "TCP")

@@ -15,8 +15,7 @@ from typing import Any
 
 import pandas as pd
 
-from src.utils import ensure_output_dir, now_str, port_service, human_bytes
-
+from src.utils import ensure_output_dir, port_service
 
 # ---------------------------------------------------------------------------
 # CSV export
@@ -67,7 +66,6 @@ def export_charts(stats: dict[str, Any], output_dir: Path | None = None) -> list
         import matplotlib
         matplotlib.use("Agg")  # non-interactive backend for headless environments
         import matplotlib.pyplot as plt
-        import matplotlib.gridspec as gridspec
     except ImportError:
         print("[WARN]  matplotlib not installed; skipping chart export.")
         return []
@@ -103,7 +101,7 @@ def export_charts(stats: dict[str, Any], output_dir: Path | None = None) -> list
             (axes[1], "Top Destination IPs", top_dst),
         ]:
             if data:
-                ips, counts = zip(*data)
+                ips, counts = zip(*data, strict=True)
                 ax.barh(ips[::-1], counts[::-1], color="#4C72B0")
                 ax.set_xlabel("Packet Count")
                 ax.set_title(title)

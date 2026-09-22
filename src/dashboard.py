@@ -12,15 +12,13 @@ from __future__ import annotations
 
 from typing import Any
 
-from rich.console import Console
-from rich.table import Table
-from rich.panel import Panel
-from rich.columns import Columns
-from rich.text import Text
 from rich import box
+from rich.columns import Columns
+from rich.console import Console
+from rich.panel import Panel
+from rich.table import Table
 
 from src.utils import port_service
-
 
 console = Console()
 
@@ -40,7 +38,7 @@ def _metrics_panel(stats: dict[str, Any]) -> Panel:
         f"[bold cyan]Peak PPS        :[/bold cyan]  {stats['peak_pps']} pkt/s",
         f"[bold cyan]Peak Time       :[/bold cyan]  {stats['peak_time']}",
     ]
-    return Panel("\n".join(lines), title="[bold green]📊 Traffic Summary[/bold green]", box=box.ROUNDED)
+    return Panel("\n".join(lines), title="[bold green]Traffic Summary[/bold green]", box=box.ROUNDED)
 
 
 def _proto_table(proto_counts: dict[str, int]) -> Table:
@@ -104,7 +102,7 @@ def render_dashboard(stats: dict[str, Any]) -> None:
     ----------
     stats : Statistics dict from :func:`src.analyzer.compute_statistics`.
     """
-    console.rule("[bold blue]🔍 Real-time Packet Monitoring & Traffic Statistics[/bold blue]")
+    console.rule("[bold blue]Real-time Packet Monitoring & Traffic Statistics[/bold blue]")
     console.print()
 
     # Key metrics

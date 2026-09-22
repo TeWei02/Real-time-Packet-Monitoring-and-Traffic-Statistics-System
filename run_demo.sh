@@ -22,7 +22,7 @@ die()   { echo -e "${RED}[ERROR]${RESET} $*" >&2; exit 1; }
 echo ""
 echo -e "${BOLD}╔══════════════════════════════════════════════════════════════╗${RESET}"
 echo -e "${BOLD}║   Real-time Packet Monitoring & Traffic Statistics System    ║${RESET}"
-echo -e "${BOLD}║          Admissions / Portfolio Demo Runner (Linux/macOS)    ║${RESET}"
+echo -e "${BOLD}║          One-command demo runner (Linux / macOS)             ║${RESET}"
 echo -e "${BOLD}╚══════════════════════════════════════════════════════════════╝${RESET}"
 echo ""
 echo -e "  This script will:"

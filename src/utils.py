@@ -4,12 +4,9 @@ utils.py – Shared utility functions for packet-monitor.
 
 from __future__ import annotations
 
-import os
 import sys
-import socket
 from datetime import datetime
 from pathlib import Path
-
 
 # ---------------------------------------------------------------------------
 # Path helpers

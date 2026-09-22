@@ -7,15 +7,11 @@ Run with:
 
 from __future__ import annotations
 
-import time
-from unittest.mock import MagicMock
-
 import pandas as pd
 import pytest
 
+from src.analyzer import _empty_stats, build_dataframe, compute_statistics
 from src.parser import ParsedPacket
-from src.analyzer import build_dataframe, compute_statistics, _empty_stats
-
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -147,7 +143,6 @@ class TestComputeStatistics:
     def test_peak_pps_with_clustered_packets(self):
         """Peak PPS should be ≥ avg PPS when packets cluster within a single second."""
         # All 5 packets land in the same second → peak == 5, avg == 5/1 == 5.0
-        base = 1_700_000_000.0
         pkts = [_make_packet(ts_offset=i * 0.1) for i in range(5)]
         df = build_dataframe(pkts)
         stats = compute_statistics(df)
