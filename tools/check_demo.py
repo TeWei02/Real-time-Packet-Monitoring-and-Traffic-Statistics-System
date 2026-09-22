@@ -300,6 +300,29 @@ def main(argv: list[str]) -> int:
         record(sw_count >= 1 and cache_keys >= 1,
                f"service worker registered ({sw_count}) with {cache_keys} cache(s)")
 
+        # The page is meant to keep working without a network connection.
+        try:
+            browser.call("Network.enable")
+            browser.call("Network.emulateNetworkConditions",
+                         {"offline": True, "latency": 0, "downloadThroughput": -1,
+                          "uploadThroughput": -1, "connectionType": "none"})
+            browser.call("Page.reload", {"ignoreCache": False})
+            browser.wait_for("document.readyState === 'complete' && "
+                             "!!document.getElementById('btn-sample')", timeout=45)
+            browser.evaluate("document.getElementById('btn-sample').click()")
+            offline_status = browser.wait_for(
+                "(window.RPM && window.RPM.status().status === 'pending') ? 0 "
+                ": JSON.parse(JSON.stringify(window.RPM.status()))", timeout=45)
+            record(offline_status["checks_passed"] == 17 and offline_status["packets"] == 200,
+                   "console still analyses the bundled capture with networking disabled "
+                   f"({offline_status['checks_passed']}/{offline_status['checks_total']} parity)")
+        except (TimeoutError, RuntimeError) as exc:
+            record(False, f"console still works with networking disabled ({exc})")
+        finally:
+            browser.call("Network.emulateNetworkConditions",
+                         {"offline": False, "latency": 0, "downloadThroughput": -1,
+                          "uploadThroughput": -1, "connectionType": "wifi"})
+
     return report_and_exit()
 
 

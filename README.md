@@ -274,7 +274,7 @@ The console is a plain static site — no build step and no bundler.
 | Unit tests | `python -m pytest -q` | 32 passed |
 | Lint | `ruff check .` | clean |
 | Static assets match the pipeline | `python tools/build_web_data.py --check` | `docs/data/demo.pcap` and `docs/data/reference.json` match `sample_data/demo.pcap` and the Scapy pipeline |
-| Published console behaves | `python tools/check_demo.py https://tewei02.github.io/Real-time-Packet-Monitoring-and-Traffic-Statistics-System/` | 16/16 checks passed |
+| Published console behaves | `python tools/check_demo.py https://tewei02.github.io/Real-time-Packet-Monitoring-and-Traffic-Statistics-System/` | 17/17 checks passed |
 | Continuous integration | `.github/workflows/ci.yml` | ruff + pytest + `--demo --export` smoke test + `build_web_data.py --check` on Python 3.11 and 3.12 |
 
 The first four commands are run inside the project's virtual environment after
@@ -285,7 +285,8 @@ requires Google Chrome.
 asserts on `window.RPM.status()`: the bundled run finishes cleanly, parity against the Python
 reference is 17/17 with no mismatch rows, CSV and Markdown exports build from page state, the
 synthetic stream runs, the packet filter narrows the table, an uploaded capture is parsed
-locally, the charts render, and a service worker is registered. It accepts either a local URL
+locally, the charts render, a service worker is registered, and the page reloads with networking
+disabled, still dissecting the bundled capture from its own cache. It accepts either a local URL
 or the deployed one, so the published page is verified the same way as the working copy.
 
 ---
