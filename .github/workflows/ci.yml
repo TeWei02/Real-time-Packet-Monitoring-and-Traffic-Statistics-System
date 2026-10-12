@@ -30,3 +30,6 @@ jobs:
         run: python main.py --demo --export
       - name: Check the static console assets against the pipeline
         run: python tools/build_web_data.py --check
+      - name: Smoke-test the performance benchmark
+        # 只確認它能跑完並產生合法 JSON；耗時隨機器而異，不做任何數值斷言。
+        run: python tools/benchmark.py --quick --stdout > /dev/null

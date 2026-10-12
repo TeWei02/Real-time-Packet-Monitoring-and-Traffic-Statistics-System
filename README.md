@@ -40,6 +40,9 @@ registers a service worker so the page works offline and can be installed to a h
 - Uploaded files are parsed locally in the browser; no data leaves the machine.
 - No measurement results, participant counts or field-trial data are reported anywhere in this
   project; the statistics shown are exactly the properties of the capture being analysed.
+- The figures in *Measured performance* describe this tool's own pipeline on captures it
+  generates, on the machine recorded in `docs/data/benchmark.json`. They are performance
+  measurements of the software, not measurements of any network.
 
 ---
 
@@ -124,6 +127,50 @@ by side with the Python reference and flags any disagreement.
 - **Structured data export** — every analysis session can export a CSV (raw packet data), two PNG charts, and a Markdown summary report with a single `--export` flag; the browser console exports the same CSV and Markdown from page state.
 - **Typed, testable design** — packets are parsed into a typed `ParsedPacket` dataclass; the suites under `tests/` cover dissection, aggregation and capture loading (32 pytest cases).
 - **Offline-capable static console** — `docs/` ships a `manifest.json`, a service worker and icons, so the published page installs as a PWA and reloads without a network connection.
+
+## 📊 Measured performance
+
+`tools/benchmark.py` measures the cost of **this tool's own pipeline**. It is
+deliberately narrow: no network traffic is captured or measured, and no figure
+below describes a real network. The inputs are captures the script generates
+itself from a fixed seed, plus the committed `sample_data/demo.pcap`.
+
+```bash
+python tools/benchmark.py            # measure and write docs/data/benchmark.json
+python tools/benchmark.py --quick    # smaller sizes, for a quick check
+```
+
+Median of 5 runs on Apple M3 (8 cores), Python 3.14.5. The environment is
+recorded in [`docs/data/benchmark.json`](docs/data/benchmark.json) next to the
+figures, so a reader can judge comparability.
+
+| Packets | Load | Parse | DataFrame | Statistics | Analysis total | Analysis pkt/s | Export (charts) |
+|--------:|-----:|------:|----------:|-----------:|---------------:|---------------:|----------------:|
+| 200 | 0.0139 s | 0.0042 s | 0.0006 s | 0.0015 s | 0.0202 s | 9,878 | 0.0904 s |
+| 1,000 | 0.0723 s | 0.0198 s | 0.0020 s | 0.0017 s | 0.0958 s | 10,443 | 0.0923 s |
+| 5,000 | 0.4766 s | 0.1357 s | 0.0147 s | 0.0033 s | 0.6304 s | 7,931 | 0.1345 s |
+| 20,000 | 2.6128 s | 0.5586 s | 0.0536 s | 0.0125 s | 3.2375 s | 6,178 | 0.2899 s |
+
+Peak traced memory at 20,000 packets: **109.75 MB** (≈5.5 KB per packet).
+
+What the numbers actually say — including the parts that are unflattering:
+
+- **Capture loading dominates, and that is where the ceiling is.** At 20,000
+  packets, loading is 2.61 s of the 3.24 s analysis total (81%). Parsing is
+  0.56 s, and *everything after parsing* — DataFrame construction and all the
+  statistics — is under 0.07 s combined. Rewriting the aggregator would move
+  almost nothing; the cost is Scapy dissecting each frame on read.
+- **Throughput is not flat.** It rises to ~10.4k packets/s near 1,000 packets
+  and falls to ~6.2k at 20,000, because the load stage scales worse than
+  linearly while the parser does not.
+- **Chart export costs roughly as much as analysing 1,000 packets** (0.09–0.29 s).
+  That is why `--export` is a separate flag rather than the default.
+- **Memory is linear** at ≈5.5 KB per packet, so the current in-memory design
+  extrapolates to roughly 5 GB for a 1M-packet capture — it would not fit. This
+  is an extrapolation from two measured points, not a measured limit.
+
+Absolute times depend on the machine; the scaling behaviour and the load-stage
+finding are the parts that carry over.
 
 ---
 

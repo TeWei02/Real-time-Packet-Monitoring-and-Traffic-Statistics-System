@@ -1,0 +1,83 @@
+{
+  "generated_by": "python tools/benchmark.py",
+  "measured_at": "2026-10-12T22:24:13Z",
+  "scope": "Measures the cost of this tool's own pipeline on captures it generates. No network traffic was captured or measured, and no figure here describes a real network.",
+  "methodology": {
+    "timing": "median of repeated runs, wall clock, time.perf_counter",
+    "repeat": 5,
+    "synthetic_seed": 20261013,
+    "note": "Absolute times depend on the machine below; the scaling across capture sizes is what transfers between machines."
+  },
+  "environment": {
+    "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+    "python": "3.14.5",
+    "cpu": "Apple M3",
+    "cpu_count": 8
+  },
+  "bundled_capture": {
+    "path": "sample_data/demo.pcap",
+    "bytes": 13936,
+    "stages": {
+      "load_s": 0.011173,
+      "parse_s": 0.003877,
+      "dataframe_s": 0.000629,
+      "statistics_s": 0.001572,
+      "export_s": 0.362996
+    }
+  },
+  "scaling": [
+    {
+      "packets": 200,
+      "capture_bytes": 14922,
+      "load_s": 0.013947,
+      "parse_s": 0.00418,
+      "dataframe_s": 0.000632,
+      "statistics_s": 0.001489,
+      "export_s": 0.090366,
+      "analysis_s": 0.020247,
+      "total_s": 0.110613,
+      "analysis_packets_per_sec": 9877.8
+    },
+    {
+      "packets": 1000,
+      "capture_bytes": 74510,
+      "load_s": 0.072293,
+      "parse_s": 0.019766,
+      "dataframe_s": 0.001976,
+      "statistics_s": 0.001724,
+      "export_s": 0.092349,
+      "analysis_s": 0.09576,
+      "total_s": 0.188109,
+      "analysis_packets_per_sec": 10442.8
+    },
+    {
+      "packets": 5000,
+      "capture_bytes": 372537,
+      "load_s": 0.47664,
+      "parse_s": 0.135695,
+      "dataframe_s": 0.014732,
+      "statistics_s": 0.003346,
+      "export_s": 0.134545,
+      "analysis_s": 0.630413,
+      "total_s": 0.764959,
+      "analysis_packets_per_sec": 7931.3
+    },
+    {
+      "packets": 20000,
+      "capture_bytes": 1490169,
+      "load_s": 2.612786,
+      "parse_s": 0.558619,
+      "dataframe_s": 0.053616,
+      "statistics_s": 0.012468,
+      "export_s": 0.289901,
+      "analysis_s": 3.237488,
+      "total_s": 3.527389,
+      "analysis_packets_per_sec": 6177.6
+    }
+  ],
+  "memory": {
+    "packets": 20000,
+    "peak_mb": 109.75,
+    "retained_mb": 98.76
+  }
+}
