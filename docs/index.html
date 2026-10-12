@@ -192,6 +192,37 @@
   </section>
 
   <!-- ============================ run locally ============================ -->
+  <section id="performance">
+    <h2>Measured performance</h2>
+    <p class="section-sub">
+      Where this pipeline actually spends its time, measured on captures it generates itself.
+      No network traffic is captured or measured for these figures, and none of them describes a
+      real network — see <a href="#scope">scope and limitations</a>. Produced by
+      <code>tools/benchmark.py</code>, which writes <code>data/benchmark.json</code>.
+    </p>
+
+    <div class="chart-card" style="margin-top:16px">
+      <h3>Stage cost per capture size</h3>
+      <div id="chart-stages"></div>
+      <div class="legend" id="legend-stages"></div>
+      <div class="chart-foot">
+        <span class="tiny">median of repeated runs</span>
+        <button class="btn ghost" id="svg-stages" type="button" style="padding:4px 10px;font-size:12.5px">SVG</button>
+      </div>
+    </div>
+
+    <p class="status" id="perf-status">loading data/benchmark.json…</p>
+
+    <div class="panel" style="margin-top:16px">
+      <div class="panel-head">
+        <h3>All measured stages</h3>
+        <span class="pill">tools/benchmark.py</span>
+      </div>
+      <div class="table-scroll" id="perf-table"></div>
+      <p class="note" id="perf-note"></p>
+    </div>
+  </section>
+
   <section id="run">
     <h2>Run it locally</h2>
     <p class="section-sub">The command-line pipeline is the primary interface; the page above is the hosted demo of its logic.</p>
@@ -382,5 +413,6 @@ docs/                  static demo published through GitHub Pages</pre>
 <p id="smoke" hidden>UI_SMOKE_PENDING</p>
 
 <script src="app.js"></script>
+<script src="benchmark.js"></script>
 </body>
 </html>

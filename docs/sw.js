@@ -1,12 +1,14 @@
 /* Offline shell for the packet-monitoring landing page. */
-const CACHE = 'rpm-demo-v1';
+const CACHE = 'rpm-demo-v2';
 const SHELL = [
   './',
   'index.html',
   'styles.css',
   'app.js',
+  'benchmark.js',
   'manifest.json',
   'data/reference.json',
+  'data/benchmark.json',
   'data/demo.pcap',
   'icons/icon-192.png',
   'icons/icon-512.png',

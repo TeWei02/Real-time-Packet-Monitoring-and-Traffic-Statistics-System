@@ -102,7 +102,10 @@ service — all state is held in memory as a pandas DataFrame.
 A third surface, the **browser console** in `docs/`, reimplements the parser and the statistics
 in JavaScript so that the same analysis can be inspected without installing anything. Keeping a
 second implementation honest is itself a design goal: the console reports its own numbers side
-by side with the Python reference and flags any disagreement.
+by side with the Python reference and flags any disagreement. The same page also carries a
+**Measured performance** section that renders `docs/data/benchmark.json` — where the pipeline
+spends its time — as a stacked chart and a table, so the figures are visible without opening the
+JSON.
 
 ---
 
@@ -127,6 +130,9 @@ by side with the Python reference and flags any disagreement.
 - **Structured data export** — every analysis session can export a CSV (raw packet data), two PNG charts, and a Markdown summary report with a single `--export` flag; the browser console exports the same CSV and Markdown from page state.
 - **Typed, testable design** — packets are parsed into a typed `ParsedPacket` dataclass; the suites under `tests/` cover dissection, aggregation and capture loading (32 pytest cases).
 - **Offline-capable static console** — `docs/` ships a `manifest.json`, a service worker and icons, so the published page installs as a PWA and reloads without a network connection.
+- **Measured, not asserted, performance** — `tools/benchmark.py` times each pipeline stage on
+  captures the project generates itself and writes `docs/data/benchmark.json`; the console renders
+  it directly, so the numbers on the page cannot drift from the file.
 
 ## 📊 Measured performance
 
@@ -205,6 +211,7 @@ Real-time-Packet-Monitoring/
 ├── docs/                    # static console published through GitHub Pages
 │   ├── index.html
 │   ├── app.js               # browser reader, aggregator and parity checks
+│   ├── benchmark.js         # renders docs/data/benchmark.json as the performance panel
 │   ├── styles.css
 │   ├── sw.js                # service worker (offline + installable)
 │   ├── manifest.json
