@@ -8,6 +8,16 @@
 [Live console](https://tewei02.github.io/Real-time-Packet-Monitoring-and-Traffic-Statistics-System/) · [Repository](https://github.com/TeWei02/Real-time-Packet-Monitoring-and-Traffic-Statistics-System) · MIT licensed · Python 3.11+
 
 ---
+<div align="center">
+
+## Demo Preview
+
+A 12-second walkthrough of the analyser: protocol distribution (TCP 80 / UDP 48 / DNS 45 / ICMP 27), packet-rate line chart, top destinations and the dissected packet table for the bundled 200-packet capture, verified **17/17 checks passed** against the Python pipeline.
+
+<video controls width="640" src="assets/demo-preview.webm"></video>
+
+</div>
+
 
 ## 🚀 Live demo
 

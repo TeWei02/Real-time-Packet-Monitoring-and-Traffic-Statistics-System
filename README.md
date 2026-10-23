@@ -7,6 +7,16 @@
 [Live console](https://tewei02.github.io/Real-time-Packet-Monitoring-and-Traffic-Statistics-System/) · [Repository](https://github.com/TeWei02/Real-time-Packet-Monitoring-and-Traffic-Statistics-System) · MIT licensed · Python 3.11+
 
 ---
+<div align="center">
+
+## Demo Preview
+
+一鍵執行（`run_demo.sh` 或 `python main.py --demo`）即可在終端儀表板與瀏覽器控制台中，看到 200 個封包的協定分佈（TCP 80 / UDP 48 / DNS 45 / ICMP 27）、流量速率折線、Top 端點排行與封包明細表，並與 Python 管線交叉比對 **17/17 checks passed**。
+
+<video controls width="640" src="assets/demo-preview.webm"></video>
+
+</div>
+
 
 ## 🚀 Live demo
 
