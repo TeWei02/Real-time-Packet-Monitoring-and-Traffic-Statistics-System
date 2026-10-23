@@ -1,5 +1,7 @@
 # Real-time Packet Monitoring and Traffic Statistics System
 
+**Language:** [![中文](https://img.shields.io/badge/%E4%B8%AD%E6%96%87-%E4%B8%AD%E6%96%87%E7%89%88-blue?style=flat-square)](README.md) [![English](https://img.shields.io/badge/English-English-blue?style=flat-square)](README.en.md)
+
 **即時封包監測與流量統計系統**
 
 [Live console](https://tewei02.github.io/Real-time-Packet-Monitoring-and-Traffic-Statistics-System/) · [Repository](https://github.com/TeWei02/Real-time-Packet-Monitoring-and-Traffic-Statistics-System) · MIT licensed · Python 3.11+
