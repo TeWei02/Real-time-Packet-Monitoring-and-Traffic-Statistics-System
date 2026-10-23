@@ -61,10 +61,12 @@ const RPM = (function () {
   }
 
   function localStamp(epochSeconds) {
+    // UTC labels so the browser build matches the Python reference on any
+    // machine / time zone (CI runners use UTC, local machines may not).
     const d = new Date(epochSeconds * 1000);
     const p = (x) => String(x).padStart(2, '0');
-    return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + ' ' +
-      p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+    return d.getUTCFullYear() + '-' + p(d.getUTCMonth() + 1) + '-' + p(d.getUTCDate()) + ' ' +
+      p(d.getUTCHours()) + ':' + p(d.getUTCMinutes()) + ':' + p(d.getUTCSeconds());
   }
 
   function mac(frame, off) {

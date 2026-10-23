@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import warnings
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 
 # ---------------------------------------------------------------------------
 # Parsed packet dataclass
@@ -36,8 +36,12 @@ class ParsedPacket:
 
     @property
     def datetime(self) -> datetime:
-        """Return the packet timestamp as a :class:`datetime` object."""
-        return datetime.fromtimestamp(self.timestamp)
+        """Return the packet timestamp as a UTC :class:`datetime` object.
+
+        Using UTC keeps the per-second aggregation buckets identical on every
+        machine (CI runners run in UTC; local machines may be in another zone).
+        """
+        return datetime.fromtimestamp(self.timestamp, tz=UTC).replace(tzinfo=None)
 
 
 # ---------------------------------------------------------------------------

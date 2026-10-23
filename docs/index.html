@@ -154,8 +154,7 @@
       <p class="note">
         The right-hand column is committed in <code>docs/data/reference.json</code>, produced by running the
         Scapy pipeline over the same file with <code>python tools/build_web_data.py</code>. Clock labels are
-        rendered in the viewer's local time zone, so a viewer outside the reference time zone will see the
-        same seconds with different wall-clock labels; the packet counts in those buckets are unaffected.
+        rendered in UTC on both sides, so the parity check matches regardless of the viewer's local time zone.
       </p>
     </div>
   </section>
